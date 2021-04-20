@@ -20,7 +20,7 @@ namespace TowerDefense.Input
             m_commandEntries.Add(evt, new CommandEntry(evt, callback));
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(TimeSpan gameTime)
         {
             MouseState state = Mouse.GetState();
             foreach (CommandEntry entry in this.m_commandEntries.Values)

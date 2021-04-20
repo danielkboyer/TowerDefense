@@ -10,12 +10,12 @@ namespace TowerDefense.Input
     /// </summary>
     public interface IInputDevice
     {
-        void Update(GameTime gameTime);
+        void Update(TimeSpan gameTime);
     }
 
     public class InputDeviceHelper
     {
-        public delegate void CommandDelegate(GameTime gameTime, float value);
-        public delegate void CommandDelegatePosition(GameTime GameTime, int x, int y);
+        public delegate void CommandDelegate(TimeSpan gameTime, float value);
+        public delegate void CommandDelegatePosition(TimeSpan GameTime, int x, int y);
     }
 }

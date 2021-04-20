@@ -46,13 +46,24 @@ namespace TowerDefense.GamePlay
 
         #endregion
 
+        #region Enemies
 
+        private Spawner _spawner;
+        #endregion
         #region Map
 
         private MapGrid _mapGrid;
+        private ShortestPath _shortestPath;
 
         #endregion
 
+        #region Cannons
+        private IProjectileHandler _projectileHandler;
+        private TurretHandler _turretHandler;
+
+        private Texture2D _basicTurretTexture;
+        private Texture2D _projectileTexture;
+        #endregion
         public GameModel(ContentManager content)
         {
 
@@ -61,10 +72,19 @@ namespace TowerDefense.GamePlay
 
             _particleSystem = new ParticleSystem(content);
             m_font = content.Load<SpriteFont>("Fonts/menu");
-
+            _basicTurretTexture = content.Load<Texture2D>("Sprites/BasicTurret/turret-1-1");
+            _projectileTexture = content.Load<Texture2D>("Sprites/thrustParticle");
             _mapGrid = new MapGrid();
             _mapGrid.LoadContent(content);
             _mapGrid.Generate();
+
+            _shortestPath = new ShortestPath();
+            
+            _spawner = new Spawner(content,_mapGrid,_shortestPath);
+            _spawner.StartLevel(0);
+
+            _projectileHandler = new ProjectileHandler(_spawner._enemies);
+            _turretHandler = new TurretHandler(_spawner._enemies);
 
             _mouseInput = new MouseInput();
             RegisterInput();
@@ -79,17 +99,33 @@ namespace TowerDefense.GamePlay
         }
 
 
-        private void OnMouseDown(GameTime gameTime, int x, int y)
+        private void OnMouseDown(TimeSpan gameTime, int x, int y)
         {
 
         }
 
-        private void OnMouseUp(GameTime gameTime, int x, int y)
+        private void OnMouseUp(TimeSpan gameTime, int x, int y)
         {
+            var mapGridCoordinates = MapGrid.GetXYFromCoordinates(x, y);
 
+            int shortest = Settings.TowerDefenseSettings.WallSkipAmount;
+            int longest = Settings.TowerDefenseSettings.LENGTH_OF_GRID - Settings.TowerDefenseSettings.WallSkipAmount;
+            if (!_mapGrid.IsPieceOccupied(mapGridCoordinates.x, mapGridCoordinates.y) && mapGridCoordinates.x >= shortest && mapGridCoordinates.x < longest && mapGridCoordinates.y >= shortest && mapGridCoordinates.y < longest)
+            {
+                _mapGrid.OccupyPiece(mapGridCoordinates.x, mapGridCoordinates.y, true);
+                if (!_spawner.UpdatePath())
+                {
+                    _mapGrid.OccupyPiece(mapGridCoordinates.x, mapGridCoordinates.y, false);
+                }
+                else
+                {
+
+                    _turretHandler.AddTurret(new BasicTurret(_basicTurretTexture, _projectileTexture, 10, 10, 10, 500, 2, mapGridCoordinates.x, mapGridCoordinates.y, _projectileHandler, _spawner._enemies));
+                }
+            }
         }
 
-        private void OnMouseMove(GameTime gameTime, int x, int y)
+        private void OnMouseMove(TimeSpan gameTime, int x, int y)
         {
 
         }
@@ -115,8 +151,11 @@ namespace TowerDefense.GamePlay
      
         public void Update(TimeSpan elapsedTime)
         {
-            
+            _spawner.Update(elapsedTime);
             _particleSystem.Update(elapsedTime);
+            _mouseInput.Update(elapsedTime);
+            _turretHandler.Update(elapsedTime);
+            _projectileHandler.Update(elapsedTime);
         }
  
        
@@ -130,6 +169,9 @@ namespace TowerDefense.GamePlay
             //render the particle system
             _particleSystem.Render(graphics, gameTime.ElapsedGameTime);
             _mapGrid.Render(graphics);
+            _spawner.Draw(graphics, gameTime.ElapsedGameTime);
+            _turretHandler.Draw(graphics, gameTime.ElapsedGameTime);
+            _projectileHandler.Draw(graphics, gameTime.ElapsedGameTime);
             RenderStats(graphics, gameTime.ElapsedGameTime);
             graphics.End();
 

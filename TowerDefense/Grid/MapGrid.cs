@@ -14,11 +14,35 @@ namespace TowerDefense.Grid
         private Texture2D _wallVert;
         private Texture2D _wallHoriz;
 
+        
+
+
         public MapGrid()
         {
             _grid = new GridPiece[Settings.TowerDefenseSettings.LENGTH_OF_GRID, Settings.TowerDefenseSettings.LENGTH_OF_GRID];
+            
         }
 
+        /// <summary>
+        /// gives the position of a grid piece
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public static Vector2 GetPosition(int x, int y)
+        {
+            return new Vector2((Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.X * x) + Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.X / 2, (y * Settings.TowerDefenseSettings.GRID_Y_LENGTH * Settings.SCALE.Y) + Settings.TowerDefenseSettings.GRID_Y_LENGTH * Settings.SCALE.Y / 2);
+        }
+        /// <summary>
+        /// gives the grid piece associated with coordinates
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public static (int x, int y) GetXYFromCoordinates(float x, float y)
+        {
+            return ((int)(x / Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.X), (int)(y / Settings.TowerDefenseSettings.GRID_Y_LENGTH * Settings.SCALE.Y));
+        }
         
         public void Generate()
         {
@@ -47,9 +71,9 @@ namespace TowerDefense.Grid
                         }
                     }
                     _grid[x, y] = new GridPiece(xPos, yPos, blockedByWall);
-                    yPos += Settings.TowerDefenseSettings.GRID_Y_LENGTH;
+                    yPos += Settings.TowerDefenseSettings.GRID_Y_LENGTH* Settings.SCALE.Y;
                 }
-                xPos += Settings.TowerDefenseSettings.GRID_X_LENGTH;
+                xPos += Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.X;
                 yPos = 0;
             }
         }
@@ -66,10 +90,19 @@ namespace TowerDefense.Grid
             return _grid[x, y].Occupied;
         }
 
+        public void OccupyPiece(int x, int y, bool state)
+        {
+            _grid[x, y].Occupied = state;
+        }
+        public bool CoordinatesInMap(int x, int y)
+        {
+            return x >= 0 && x < Settings.TowerDefenseSettings.LENGTH_OF_GRID && y >= 0 && y < Settings.TowerDefenseSettings.LENGTH_OF_GRID;
+        }
+
         public void Render(SpriteBatch graphics)
         {
 
-            var scale = Settings.TowerDefenseSettings.GRID_X_LENGTH / Settings.TowerDefenseSettings.WALL_HORIZ_SIZE.X;
+            var scale = Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.X / Settings.TowerDefenseSettings.WALL_HORIZ_SIZE.X;
             for (int x = 0; x < Settings.TowerDefenseSettings.LENGTH_OF_GRID; x++)
             {
                 if(x < Settings.TowerDefenseSettings.WallSkipAmount)

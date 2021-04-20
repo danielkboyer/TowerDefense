@@ -9,14 +9,14 @@ namespace TowerDefense
     {
         #region GridSettings
         //The size of the x and y length
-        public float GRID_X_LENGTH = 20;
-        public float GRID_Y_LENGTH = 20;
+        public float GRID_X_LENGTH = 50;
+        public float GRID_Y_LENGTH = 50;
 
         //the number of grids 
-        public readonly int LENGTH_OF_GRID = 40;
+        public readonly int LENGTH_OF_GRID = 16;
 
         //the amount before we start the grid
-        public int WallSkipAmount = 2;
+        public int WallSkipAmount = 1;
 
         //must be even if length_of_grid is even.
         //Has to be atleast 2
@@ -32,6 +32,7 @@ namespace TowerDefense
 
         #region CannonSettings
 
+        public readonly Vector2 CREEP_SCALE = new Vector2(1f, 1f);
         #endregion
     }
 }

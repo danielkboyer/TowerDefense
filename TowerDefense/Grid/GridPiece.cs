@@ -10,11 +10,20 @@ namespace TowerDefense.Grid
         public float YPos { get; set; }
         public bool Occupied { get; set; }
 
+        
+
         public GridPiece(float xPos, float yPos, bool occupied)
         {
             this.XPos = xPos;
             this.YPos = yPos;
             this.Occupied = occupied;
+        }
+
+        public GridPiece(GridPiece gridPiece)
+        {
+            this.XPos = gridPiece.XPos;
+            this.YPos = gridPiece.YPos;
+            this.Occupied = gridPiece.Occupied;
         }
     }
 }
