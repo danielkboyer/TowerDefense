@@ -27,13 +27,14 @@ namespace TowerDefense.GamePlay
     {
 
         private PersistentStorage _persistentStorage;
-    
 
 
+        Action<TimeSpan> m_updateFunction;
         private ParticleSystem _particleSystem;
 
         private SpriteFont m_font;
 
+        private (int x, int y) MouseOn;
 
         #region Input
 
@@ -63,6 +64,20 @@ namespace TowerDefense.GamePlay
 
         private Texture2D _basicTurretTexture;
         private Texture2D _projectileTexture;
+
+        private Texture2D _platformTexture;
+
+        private int Level;
+        #endregion
+
+        #region Backgrounds
+
+        private Texture2D _mainBackground;
+        private Texture2D _lifeSensorGreen;
+        private Texture2D _lifeSensorYellow;
+        private Texture2D _lifeSensorRed;
+
+
         #endregion
         public GameModel(ContentManager content)
         {
@@ -72,8 +87,17 @@ namespace TowerDefense.GamePlay
 
             _particleSystem = new ParticleSystem(content);
             m_font = content.Load<SpriteFont>("Fonts/menu");
+            //
+            //load texutres here
+            //
             _basicTurretTexture = content.Load<Texture2D>("Sprites/BasicTurret/turret-1-1");
             _projectileTexture = content.Load<Texture2D>("Sprites/thrustParticle");
+            _platformTexture = content.Load<Texture2D>("Backgrounds/turret-base");
+            _mainBackground = content.Load<Texture2D>("Backgrounds/tower-defense-background-stars");
+            _lifeSensorGreen = content.Load<Texture2D>("Backgrounds/13-1");
+            _lifeSensorYellow = content.Load<Texture2D>("Backgrounds/13-2");
+            _lifeSensorRed = content.Load<Texture2D>("Backgrounds/13-3");
+            //Initialize map content
             _mapGrid = new MapGrid();
             _mapGrid.LoadContent(content);
             _mapGrid.Generate();
@@ -81,13 +105,14 @@ namespace TowerDefense.GamePlay
             _shortestPath = new ShortestPath();
             
             _spawner = new Spawner(content,_mapGrid,_shortestPath);
-            _spawner.StartLevel(0);
 
             _projectileHandler = new ProjectileHandler(_spawner._enemies);
             _turretHandler = new TurretHandler(_spawner._enemies);
 
             _mouseInput = new MouseInput();
             RegisterInput();
+            Level = 1;
+            m_updateFunction = MapUpdate;
 
         }
 
@@ -96,8 +121,19 @@ namespace TowerDefense.GamePlay
             _mouseInput.registerCommand(MouseInput.MouseEvent.MouseDown, new InputDeviceHelper.CommandDelegatePosition(OnMouseDown));
             _mouseInput.registerCommand(MouseInput.MouseEvent.MouseUp, new InputDeviceHelper.CommandDelegatePosition(OnMouseUp));
             _mouseInput.registerCommand(MouseInput.MouseEvent.MouseMove, new InputDeviceHelper.CommandDelegatePosition(OnMouseMove));
+
+            InputHandling.RegisterCommand(Microsoft.Xna.Framework.Input.Keys.G, StartNextLevel,new KeyInformation(KeyTrigger.KEY_DOWN,"START LEVEL"));
+     
         }
 
+        private void StartNextLevel(TimeSpan elapsedTime)
+        {
+            if (_spawner.LevelOver)
+            {
+                _spawner.StartLevel(Level);
+                m_updateFunction = GameUpdate;
+            }
+        }
 
         private void OnMouseDown(TimeSpan gameTime, int x, int y)
         {
@@ -120,14 +156,21 @@ namespace TowerDefense.GamePlay
                 else
                 {
 
-                    _turretHandler.AddTurret(new BasicTurret(_basicTurretTexture, _projectileTexture, 10, 10, 10, 500, 2, mapGridCoordinates.x, mapGridCoordinates.y, _projectileHandler, _spawner._enemies));
+                    _turretHandler.AddTurret(new BasicTurret(_basicTurretTexture, _projectileTexture,_platformTexture, 10, 10, 10, 500, 2, mapGridCoordinates.x, mapGridCoordinates.y, _projectileHandler, _spawner._enemies));
                 }
             }
         }
 
         private void OnMouseMove(TimeSpan gameTime, int x, int y)
         {
+            var mapGridCoordinates = MapGrid.GetXYFromCoordinates(x, y);
+            if(MouseOn.x != mapGridCoordinates.x || MouseOn.y != mapGridCoordinates.y)
+            {
+                _mapGrid.HighlightPiece(MouseOn.x, MouseOn.y, false);
+                MouseOn = (mapGridCoordinates.x, mapGridCoordinates.y);
+            }
 
+            _mapGrid.HighlightPiece(mapGridCoordinates.x,mapGridCoordinates.y, true);
         }
 
 
@@ -144,28 +187,50 @@ namespace TowerDefense.GamePlay
             _persistentStorage.Save("DEFAULT", _playerStats);
         }
 
-       
-  
 
-     
-     
-        public void Update(TimeSpan elapsedTime)
+
+
+
+        #region updateFunctions
+
+        public void GameUpdate(TimeSpan elapsedTime)
         {
+            InputHandling.Update(elapsedTime);
+            _mouseInput.Update(elapsedTime);
             _spawner.Update(elapsedTime);
             _particleSystem.Update(elapsedTime);
-            _mouseInput.Update(elapsedTime);
+           
             _turretHandler.Update(elapsedTime);
             _projectileHandler.Update(elapsedTime);
+
+            if (_spawner.LevelOver)
+            {
+                m_updateFunction = MapUpdate;
+            }
         }
- 
-       
+
+        public void MapUpdate(TimeSpan elapsedTime)
+        {
+            InputHandling.Update(elapsedTime);
+            _mouseInput.Update(elapsedTime);
+            _particleSystem.Update(elapsedTime);
+            _turretHandler.Update(elapsedTime);
+            _projectileHandler.Update(elapsedTime);
+            
+        }
+        public void Update(TimeSpan elapsedTime)
+        {
+            m_updateFunction(elapsedTime);
+        }
+        #endregion
+
 
         public void Render(GameTime gameTime, SpriteBatch graphics)
         {
           
             graphics.Begin();
 
-          
+            RenderMap(graphics);
             //render the particle system
             _particleSystem.Render(graphics, gameTime.ElapsedGameTime);
             _mapGrid.Render(graphics);
@@ -178,6 +243,20 @@ namespace TowerDefense.GamePlay
 
         }
 
+
+        public void RenderMap(SpriteBatch graphics)
+        {
+            //draw the main background
+            graphics.Draw(_mainBackground, new Rectangle(0, 0, Settings.GameSettings.WINDOW_WIDTH, Settings.GameSettings.WINDOW_HEIGHT), Color.White);
+            graphics.Draw(_lifeSensorGreen, HealthStatusPoint(), Color.White);
+
+
+        }
+
+        private Rectangle HealthStatusPoint()
+        {
+            return new Rectangle((int)(800 * Settings.SCALE.X), (int)(600 * Settings.SCALE.Y), (int)(400 * Settings.SCALE.X), (int)(200 * Settings.SCALE.Y));
+        }
 
         public void RenderStats(SpriteBatch graphics, TimeSpan elapsedTime)
         {

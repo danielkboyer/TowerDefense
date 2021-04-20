@@ -31,6 +31,8 @@ namespace TowerDefense.GamePlay
         protected Texture2D _bulletTexture;
         protected List<Texture2D> _textures;
 
+        protected Texture2D _platformTexture;
+
         public int Range;
 
         protected List<Enemy> _enemies;
@@ -52,6 +54,8 @@ namespace TowerDefense.GamePlay
         }
         public virtual void Draw(SpriteBatch graphics, TimeSpan elapsedTime)
         {
+            graphics.Draw(_platformTexture, MapGrid.GetPosition(XPos,YPos), null, Color.White, 0, new Vector2(_platformTexture.Width / 2, _platformTexture.Height / 2), Settings.TowerDefenseSettings.PLATFORM_SCALE * Settings.SCALE, SpriteEffects.None, 0);
+
             _animatedSprite.draw(graphics);
         }
 

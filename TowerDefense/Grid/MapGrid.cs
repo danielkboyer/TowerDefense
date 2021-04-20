@@ -1,9 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TowerDefense.Grid
 {
@@ -14,13 +11,14 @@ namespace TowerDefense.Grid
         private Texture2D _wallVert;
         private Texture2D _wallHoriz;
 
-        
 
 
+
+        private Texture2D _tile;
         public MapGrid()
         {
             _grid = new GridPiece[Settings.TowerDefenseSettings.LENGTH_OF_GRID, Settings.TowerDefenseSettings.LENGTH_OF_GRID];
-            
+
         }
 
         /// <summary>
@@ -31,7 +29,7 @@ namespace TowerDefense.Grid
         /// <returns></returns>
         public static Vector2 GetPosition(int x, int y)
         {
-            return new Vector2((Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.X * x) + Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.X / 2, (y * Settings.TowerDefenseSettings.GRID_Y_LENGTH * Settings.SCALE.Y) + Settings.TowerDefenseSettings.GRID_Y_LENGTH * Settings.SCALE.Y / 2);
+            return new Vector2((Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.Y * x) + Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.Y / 2, (y * Settings.TowerDefenseSettings.GRID_Y_LENGTH * Settings.SCALE.Y) + Settings.TowerDefenseSettings.GRID_Y_LENGTH * Settings.SCALE.Y / 2);
         }
         /// <summary>
         /// gives the grid piece associated with coordinates
@@ -41,23 +39,23 @@ namespace TowerDefense.Grid
         /// <returns></returns>
         public static (int x, int y) GetXYFromCoordinates(float x, float y)
         {
-            return ((int)(x / Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.X), (int)(y / Settings.TowerDefenseSettings.GRID_Y_LENGTH * Settings.SCALE.Y));
+            return ((int)(x / Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.Y), (int)(y / Settings.TowerDefenseSettings.GRID_Y_LENGTH * Settings.SCALE.Y));
         }
-        
+
         public void Generate()
         {
             float xPos = 0;
             float yPos = 0;
             for (int x = 0; x < Settings.TowerDefenseSettings.LENGTH_OF_GRID; x++)
             {
-                for(int y = 0; y < Settings.TowerDefenseSettings.LENGTH_OF_GRID; y++)
+                for (int y = 0; y < Settings.TowerDefenseSettings.LENGTH_OF_GRID; y++)
                 {
-                    int lower = Settings.TowerDefenseSettings.LENGTH_OF_GRID / 2 - 1 -((Settings.TowerDefenseSettings.WallOpeningAmount-2)/2);
+                    int lower = Settings.TowerDefenseSettings.LENGTH_OF_GRID / 2 - 1 - ((Settings.TowerDefenseSettings.WallOpeningAmount - 2) / 2);
                     int upper = Settings.TowerDefenseSettings.LENGTH_OF_GRID / 2 + ((Settings.TowerDefenseSettings.WallOpeningAmount - 2) / 2);
                     bool blockedByWall = x < Settings.TowerDefenseSettings.WallSkipAmount || x > Settings.TowerDefenseSettings.LENGTH_OF_GRID - Settings.TowerDefenseSettings.WallSkipAmount - 1 || y < Settings.TowerDefenseSettings.WallSkipAmount || y > Settings.TowerDefenseSettings.LENGTH_OF_GRID - Settings.TowerDefenseSettings.WallSkipAmount - 1;
-                    if(x < Settings.TowerDefenseSettings.WallSkipAmount || x > Settings.TowerDefenseSettings.LENGTH_OF_GRID - Settings.TowerDefenseSettings.WallSkipAmount - 1)
+                    if (x < Settings.TowerDefenseSettings.WallSkipAmount || x > Settings.TowerDefenseSettings.LENGTH_OF_GRID - Settings.TowerDefenseSettings.WallSkipAmount - 1)
                     {
-                        if(y >= lower && y <= upper)
+                        if (y >= lower && y <= upper)
                         {
                             blockedByWall = false;
                         }
@@ -71,9 +69,9 @@ namespace TowerDefense.Grid
                         }
                     }
                     _grid[x, y] = new GridPiece(xPos, yPos, blockedByWall);
-                    yPos += Settings.TowerDefenseSettings.GRID_Y_LENGTH* Settings.SCALE.Y;
+                    yPos += Settings.TowerDefenseSettings.GRID_Y_LENGTH * Settings.SCALE.Y;
                 }
-                xPos += Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.X;
+                xPos += Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.Y;
                 yPos = 0;
             }
         }
@@ -83,73 +81,69 @@ namespace TowerDefense.Grid
 
             this._wallHoriz = content.Load<Texture2D>("Sprites/WallHorizBlack");
             this._wallVert = content.Load<Texture2D>("Sprites/WallVertBlack");
+
+            _tile = content.Load<Texture2D>("Backgrounds/tile-1-center");
         }
 
+
+        public bool IsOnGrid(int x, int y)
+        {
+            if (x < 0)
+                return false;
+            if (x >= Settings.TowerDefenseSettings.LENGTH_OF_GRID)
+                return false;
+            if (y < 0)
+                return false;
+            if (y >= Settings.TowerDefenseSettings.LENGTH_OF_GRID)
+                return false;
+
+            return true;
+        }
         public bool IsPieceOccupied(int x, int y)
         {
-            return _grid[x, y].Occupied;
+            if (IsOnGrid(x,y))
+            {
+                return _grid[x, y].Occupied;
+            }
+            return true;
         }
 
         public void OccupyPiece(int x, int y, bool state)
         {
-            _grid[x, y].Occupied = state;
+            if (IsOnGrid(x, y))
+            {
+                _grid[x, y].Occupied = state;
+            }
         }
         public bool CoordinatesInMap(int x, int y)
         {
             return x >= 0 && x < Settings.TowerDefenseSettings.LENGTH_OF_GRID && y >= 0 && y < Settings.TowerDefenseSettings.LENGTH_OF_GRID;
         }
-
+        public void HighlightPiece(int x, int y, bool highlight)
+        {
+            if (IsOnGrid(x, y))
+            {
+                _grid[x, y].Highlight = highlight;
+            }   
+        }
         public void Render(SpriteBatch graphics)
         {
-
-            var scale = Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.X / Settings.TowerDefenseSettings.WALL_HORIZ_SIZE.X;
-            for (int x = 0; x < Settings.TowerDefenseSettings.LENGTH_OF_GRID; x++)
+            foreach (var gridPiece in _grid)
             {
-                if(x < Settings.TowerDefenseSettings.WallSkipAmount)
+                if (!gridPiece.Occupied)
                 {
-                    continue;
-                }
-
-               
-                if (x > Settings.TowerDefenseSettings.LENGTH_OF_GRID - Settings.TowerDefenseSettings.WallSkipAmount - 1)
-                {
-                    
-                    continue;
-                }
-                for (int y = 0; y < Settings.TowerDefenseSettings.LENGTH_OF_GRID; y++)
-                {
-                    if (y < Settings.TowerDefenseSettings.WallSkipAmount)
+                    Color color = Color.White;
+                    if (gridPiece.Highlight)
                     {
-                        continue;
+                        color = Color.Transparent;
                     }
-                    if (y == Settings.TowerDefenseSettings.LENGTH_OF_GRID - Settings.TowerDefenseSettings.WallSkipAmount - 1)
-                    {
-                        //we have to switch x and y or it doesn't make sense.
-                        graphics.Draw(_wallVert, new Vector2(_grid[x, y].YPos + Settings.TowerDefenseSettings.GRID_X_LENGTH, _grid[x, y].XPos ), null, Color.White, 0, new Vector2(0, 0), new Vector2(1, scale), SpriteEffects.None, 0);
+                    graphics.Draw(_tile, new Vector2(gridPiece.XPos, gridPiece.YPos), null, color, 0, new Vector2(0, 0), Settings.TowerDefenseSettings.TILE_SCALE * Settings.SCALE, SpriteEffects.None, 0);
 
-                    }
-                    if (y > Settings.TowerDefenseSettings.LENGTH_OF_GRID - Settings.TowerDefenseSettings.WallSkipAmount - 1)
-                    {
-                        
-                        continue;
-                    }
-                    graphics.Draw(_wallHoriz, new Vector2(_grid[x, y].XPos, _grid[x, y].YPos), null, Color.White, 0, new Vector2(0, 0), new Vector2(scale, 1), SpriteEffects.None, 0);
-                    graphics.Draw(_wallVert, new Vector2(_grid[x, y].XPos, _grid[x, y].YPos), null, Color.White, 0, new Vector2(0, 0), new Vector2(1, scale), SpriteEffects.None, 0);
-                  
                 }
-
-                //draw the bottom part
-                graphics.Draw(_wallHoriz, new Vector2(_grid[x, Settings.TowerDefenseSettings.LENGTH_OF_GRID - Settings.TowerDefenseSettings.WallSkipAmount - 1].XPos, _grid[x, Settings.TowerDefenseSettings.LENGTH_OF_GRID - Settings.TowerDefenseSettings.WallSkipAmount - 1].YPos + Settings.TowerDefenseSettings.GRID_Y_LENGTH), null, Color.White, 0, new Vector2(0, 0), new Vector2(scale, 1), SpriteEffects.None, 0);
-
-
             }
-            //if even this is plus one the middle 
-            int middle = Settings.TowerDefenseSettings.LENGTH_OF_GRID / 2;
-            //Do this however many times the skip amount is 
-            for (int x = 0;x<Settings.TowerDefenseSettings.WallSkipAmount; x++)
-            {
-                
-            }
+
+
+
         }
 
     }

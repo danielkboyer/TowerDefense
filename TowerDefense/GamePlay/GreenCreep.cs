@@ -19,28 +19,22 @@ namespace TowerDefense.GamePlay
             this.Speed = speed;
             this.gridPositions = gridPositions;
 
-            _animatedSprite = new AnimatedSprite(Settings.TowerDefenseSettings.CREEP_SCALE, MapGrid.GetPosition(gridPositions[gridIndex].XPos, gridPositions[gridIndex++].YPos), MapGrid.GetPosition(gridPositions[gridIndex].XPos, gridPositions[gridIndex].YPos), 0, Speed, _textures, new int[] {1000,200,100,1000,100,200 });
+           
 
             this.Height = textures[0].Height * Settings.TowerDefenseSettings.CREEP_SCALE.Y * Settings.SCALE.Y;
             this.Width = textures[0].Width * Settings.TowerDefenseSettings.CREEP_SCALE.X * Settings.SCALE.X;
         }
 
-        public override void Die()
+        public void Init()
         {
-            base.Die();
+            _animatedSprite = new AnimatedSprite(Settings.TowerDefenseSettings.CREEP_SCALE, MapGrid.GetPosition(gridPositions[gridIndex].XPos, gridPositions[gridIndex++].YPos), MapGrid.GetPosition(gridPositions[gridIndex].XPos, gridPositions[gridIndex].YPos), 0, Speed, _textures, new int[] { 1000, 200, 100, 1000, 100, 200 });
         }
 
-        public override void Draw(SpriteBatch graphics,TimeSpan elapsedtime)
+        public override Enemy Copy(List<GridPos> shortestPath)
         {
-            base.Draw(graphics, elapsedtime);
-         }
-
-        public override void Move()
-        {
-
-            base.Move();
-         
+            var greenCreep = new GreenCreep(_textures, this.Health, this.Speed, shortestPath);
+            greenCreep.Init();
+            return greenCreep;
         }
-
     }
 }

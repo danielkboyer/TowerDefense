@@ -11,10 +11,16 @@ namespace TowerDefense.GamePlay
 {
     public class Spawner
     {
+
+        public bool LevelOver
+        {
+            get
+            {
+                return _enemies.Count == 0 && (_currentLevel == null || _currentLevel.LevelOver);
+            }
+        }
         public List<Enemy> _enemies { get; protected set; }
 
-        private (int x,int y) _spawnStart;
-        private (int x, int y) _spawnEnd;
         #region textures
 
         private List<Texture2D> _greenCreepTextures;
@@ -24,9 +30,10 @@ namespace TowerDefense.GamePlay
         private MapGrid _mapGrid;
         private ShortestPath _shortestPath;
 
-        private float SpawnRate = 2000;
-        private TimeSpan currentRate;
         private Random _random;
+
+        private Level _currentLevel;
+
         public (int x, int y) TopSpawnPoint
         {
             get
@@ -66,34 +73,53 @@ namespace TowerDefense.GamePlay
             _random = new Random();
             this._mapGrid = mapGrid;
             this._shortestPath = shortestPath;
+            
         }
 
         public bool StartLevel(int level)
         {
-            _spawnStart = LeftSpawnPoint;
-            _spawnEnd = BottomSpawnPoint;
+            
+            if (level == 1)
+            {
+                _currentLevel = LevelOne(_shortestPath);
+            }
 
-            var canComputePath = _shortestPath.CalculateShortestPath(_mapGrid, _spawnStart.x, _spawnStart.y, _spawnEnd.x, _spawnEnd.y);
+            var canComputePath = _shortestPath.CalculateShortestPath(_mapGrid, _currentLevel.Start.x, _currentLevel.Start.y, _currentLevel.End.x, _currentLevel.End.y);
             if (canComputePath != null)
             {
                 _shortestPath.Path = canComputePath;
-                var shortestPathList = canComputePath.ToList();
-                _enemies.Add(new GreenCreep(_greenCreepTextures, 100, 1100, shortestPathList));
-                _enemies.Add(new GreenCreep(_greenCreepTextures, 100, 800, shortestPathList));
-                _enemies.Add(new GreenCreep(_greenCreepTextures, 100, 400, shortestPathList));
-                _enemies.Add(new GreenCreep(_greenCreepTextures, 100, 1000, shortestPathList));
-                _enemies.Add(new GreenCreep(_greenCreepTextures, 100, 889, shortestPathList));
-
                 return true;
             }
             return false;
         }
 
 
-        public bool UpdatePath()
+        private Level LevelOne(ShortestPath shortestPath)
         {
             
-            var canComputePath = _shortestPath.CalculateShortestPath(_mapGrid, _spawnStart.x, _spawnStart.y, _spawnEnd.x, _spawnEnd.y);
+            EnemyPacket packet = new EnemyPacket(new GreenCreep(_greenCreepTextures, 100, 1000, null), 5, 1000, 2000,  shortestPath);
+            
+
+            return new Level(new List<EnemyPacket>() { packet }, LeftSpawnPoint, RightSpawnPoint);
+        }
+
+        public bool UpdatePath()
+        {
+            //we need to make sure the left side can reach both the top right and bottom, this means all sides can reach eachother
+            var leftSpawnPoint = LeftSpawnPoint;
+            var topSpawnPoint = TopSpawnPoint;
+            var rightSpawnPoint = RightSpawnPoint;
+            var bottomSpawnPoint = BottomSpawnPoint;
+
+            if (_shortestPath.CalculateShortestPath(_mapGrid, leftSpawnPoint.x, leftSpawnPoint.y, rightSpawnPoint.x, rightSpawnPoint.y) == null)
+                return false;
+            if (_shortestPath.CalculateShortestPath(_mapGrid, leftSpawnPoint.x, leftSpawnPoint.y, topSpawnPoint.x, topSpawnPoint.y) == null)
+                return false;
+            if (_shortestPath.CalculateShortestPath(_mapGrid, leftSpawnPoint.x, leftSpawnPoint.y, bottomSpawnPoint.x, bottomSpawnPoint.y) == null)
+                return false;
+            if (_currentLevel == null || _currentLevel.LevelOver)
+                return true;
+            var canComputePath = _shortestPath.CalculateShortestPath(_mapGrid, _currentLevel.Start.x, _currentLevel.Start.y, _currentLevel.End.x, _currentLevel.End.y);
             if (canComputePath != null)
             {
                 var canComputeToList = canComputePath.ToList();
@@ -145,11 +171,10 @@ namespace TowerDefense.GamePlay
         }
         public void Update(TimeSpan elapsedTime)
         {
-            currentRate += elapsedTime;
-            if(currentRate.TotalMilliseconds >= SpawnRate)
+            var newEnemies = _currentLevel.Spawn(elapsedTime);
+            if(newEnemies != null)
             {
-                currentRate -= TimeSpan.FromMilliseconds(SpawnRate);
-                _enemies.Add(new GreenCreep(_greenCreepTextures, 1600, 800, _shortestPath.Path.ToList()));
+                _enemies.AddRange(newEnemies);
             }
             foreach (var enemy in _enemies)
             {
@@ -159,6 +184,8 @@ namespace TowerDefense.GamePlay
                 }
             }
             _enemies.RemoveAll(t => !t.Alive);
+
+            
         }
 
         public void Draw(SpriteBatch graphics, TimeSpan elapsedTime)

@@ -10,6 +10,7 @@ namespace TowerDefense.Grid
         public float YPos { get; set; }
         public bool Occupied { get; set; }
 
+        public bool Highlight { get; set; }
         
 
         public GridPiece(float xPos, float yPos, bool occupied)

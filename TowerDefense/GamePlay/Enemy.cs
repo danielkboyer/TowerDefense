@@ -126,6 +126,12 @@ namespace TowerDefense.GamePlay
             }
         }
 
+        /// <summary>
+        /// clones the current enemy into a new one
+        /// </summary>
+        /// <returns></returns>
+        public abstract Enemy Copy(List<GridPos> shortestPath);
+
         
     }
 }

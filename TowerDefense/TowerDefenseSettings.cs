@@ -23,9 +23,10 @@ namespace TowerDefense
         //the size of the openings in the walls.
         public int WallOpeningAmount = 4;
 
-        public Vector2 WALL_VERT_SIZE = new Vector2(2, 96);
 
-        public Vector2 WALL_HORIZ_SIZE = new Vector2(96, 2);
+        public Vector2 TILE_SCALE = new Vector2(1, 1);
+
+        
 
         #endregion
 
@@ -33,6 +34,8 @@ namespace TowerDefense
         #region CannonSettings
 
         public readonly Vector2 CREEP_SCALE = new Vector2(1f, 1f);
+
+        public Vector2 PLATFORM_SCALE = new Vector2(1.5f, 1.5f);
         #endregion
     }
 }
