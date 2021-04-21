@@ -28,6 +28,8 @@ namespace TowerDefense.GamePlay
 
         private List<Texture2D> _tankCreepTextures;
 
+        private List<Texture2D> _flyingCreepTextures;
+
         private Texture2D _greenHealthBar;
         private Texture2D _redHealthBar;
 
@@ -80,6 +82,7 @@ namespace TowerDefense.GamePlay
             _redHealthBar = content.Load<Texture2D>("Sprites/RedHealthBar");
             _basicCreepTextures = LoadBasicCreepTextures(content);
             _tankCreepTextures = LoadTankCreepTextures(content);
+            _flyingCreepTextures = LoadFlyingCreepTextures(content);
             _random = new Random();
             this._mapGrid = mapGrid;
             this._shortestPath = shortestPath;
@@ -106,6 +109,10 @@ namespace TowerDefense.GamePlay
             {
                 _currentLevel = LevelFour(_shortestPath);
             }
+            else if (level == 5)
+            {
+                _currentLevel = LevelFive(_shortestPath);
+            }
 
             var canComputePath = _shortestPath.CalculateShortestPath(_mapGrid, _currentLevel.Start.x, _currentLevel.Start.y, _currentLevel.End.x, _currentLevel.End.y);
             if (canComputePath != null)
@@ -121,18 +128,18 @@ namespace TowerDefense.GamePlay
         {
             
             EnemyPacket packet = new EnemyPacket(new BasicCreep(_basicCreepTextures,_greenHealthBar,_redHealthBar, null), 5, 0, 2000,  shortestPath);
-            
 
-            return new Level(new List<EnemyPacket>() { packet }, LeftSpawnPoint, RightSpawnPoint);
+            EnemyPacket flyingPacket = new EnemyPacket(new FlyingCreep(_flyingCreepTextures, _greenHealthBar, _redHealthBar, null), 10, 0, 1000, shortestPath);
+
+            return new Level(new List<EnemyPacket>() { packet ,flyingPacket}, LeftSpawnPoint, RightSpawnPoint);
         }
 
         private Level LevelTwo(ShortestPath shortestPath)
         {
-
             EnemyPacket packet = new EnemyPacket(new BasicCreep(_basicCreepTextures, _greenHealthBar, _redHealthBar, null), 5, 0, 1000, shortestPath);
 
 
-            return new Level(new List<EnemyPacket>() { packet }, TopSpawnPoint, BottomSpawnPoint);
+            return new Level(new List<EnemyPacket>() { packet  }, TopSpawnPoint, BottomSpawnPoint);
         }
 
         private Level LevelThree(ShortestPath shortestPath)
@@ -151,6 +158,15 @@ namespace TowerDefense.GamePlay
 
 
             return new Level(new List<EnemyPacket>() { tankPacket }, BottomSpawnPoint, TopSpawnPoint);
+        }
+
+        private Level LevelFive(ShortestPath shortestPath)
+        {
+
+            EnemyPacket flyingPacket = new EnemyPacket(new FlyingCreep(_flyingCreepTextures, _greenHealthBar, _redHealthBar, null), 10, 0, 1000, shortestPath);
+
+
+            return new Level(new List<EnemyPacket>() { flyingPacket }, LeftSpawnPoint, RightSpawnPoint);
         }
 
         public bool UpdatePath()
@@ -177,7 +193,7 @@ namespace TowerDefense.GamePlay
                 //first we have to make sure all enemies can get to a path out
                 foreach(var enemy in _enemies)
                 {
-                    if (enemy.Alive)
+                    if (enemy.Alive && !enemy.CanFly)
                     {
                         var getXYCoord = MapGrid.GetXYFromCoordinates(enemy.Position.X, enemy.Position.Y);
                         var pathForEnemy = _shortestPath.PathToShortest(getXYCoord.x, getXYCoord.y, _mapGrid, canComputeToList);
@@ -193,7 +209,7 @@ namespace TowerDefense.GamePlay
                 int index = 0;
                 foreach (var enemy in _enemies)
                 {
-                    if (enemy.Alive)
+                    if (enemy.Alive && !enemy.CanFly)
                     {
                         enemy.UpdatePath(enemyPaths[index].path, enemyPaths[index++].index);
                     }
@@ -219,7 +235,14 @@ namespace TowerDefense.GamePlay
             }
             return _basicCreepTextures;
         }
-
+        public List<Texture2D> LoadFlyingCreepTextures(ContentManager content)
+        {
+            _flyingCreepTextures = new List<Texture2D>();
+            
+            _flyingCreepTextures.Add(content.Load<Texture2D>("Sprites/FlyingCreep/hangar-ship"));
+            
+            return _flyingCreepTextures;
+        }
         public List<Texture2D> LoadTankCreepTextures(ContentManager content)
         {
             _tankCreepTextures = new List<Texture2D>();

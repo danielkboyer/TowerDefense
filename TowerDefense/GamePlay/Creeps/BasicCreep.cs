@@ -52,17 +52,17 @@ namespace TowerDefense.GamePlay
             }
 
 
-        
+
 
 
             _animatedSprite = new AnimatedSprite(Settings.TowerDefenseSettings.CREEP_SCALE, MapGrid.GetPosition(gridPositions[gridIndex].XPos, gridPositions[gridIndex++].YPos), MapGrid.GetPosition(gridPositions[gridIndex].XPos, gridPositions[gridIndex].YPos), rotation, Speed, _textures, new int[] { 1000, 200, 100, 1000, 100, 200 });
         }
 
-public override Enemy Copy(List<GridPos> shortestPath)
-{
-    var greenCreep = new BasicCreep(_textures, this._greenHealthBar, this._redHealthBar,  shortestPath);
-    greenCreep.Init();
-    return greenCreep;
-}
+        public override Enemy Copy(List<GridPos> shortestPath)
+        {
+            var greenCreep = new BasicCreep(_textures, this._greenHealthBar, this._redHealthBar, shortestPath);
+            greenCreep.Init();
+            return greenCreep;
+        }
     }
 }

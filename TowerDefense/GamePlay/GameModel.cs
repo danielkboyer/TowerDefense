@@ -77,6 +77,10 @@ namespace TowerDefense.GamePlay
         private Texture2D _missleTurretTexture2;
         private Texture2D _missleTurretTexture3;
 
+        private Texture2D _pelletTurretTexture;
+        private Texture2D _pelletTurretTexture2;
+        private Texture2D _pelletTurretTexture3;
+
         private Texture2D _projectileTexture;
 
         private Texture2D _platformTexture;
@@ -134,6 +138,9 @@ namespace TowerDefense.GamePlay
             _missleTurretTexture = content.Load<Texture2D>("Sprites/MissleTurret/turret-3-1");
             _missleTurretTexture2 = content.Load<Texture2D>("Sprites/MissleTurret/turret-3-2");
             _missleTurretTexture3 = content.Load<Texture2D>("Sprites/MissleTurret/turret-3-3");
+            _pelletTurretTexture = content.Load<Texture2D>("Sprites/PelletTurret/turret-5-1");
+            _pelletTurretTexture2 = content.Load<Texture2D>("Sprites/PelletTurret/turret-5-2");
+            _pelletTurretTexture3 = content.Load<Texture2D>("Sprites/PelletTurret/turret-5-3");
             _projectileTexture = content.Load<Texture2D>("Sprites/thrustParticle");
             _platformTexture = content.Load<Texture2D>("Backgrounds/turret-base");
             _mainBackground = content.Load<Texture2D>("Backgrounds/tower-defense-background-stars");
@@ -195,9 +202,17 @@ namespace TowerDefense.GamePlay
             _mouseInput.registerCommand(MouseInput.MouseEvent.MouseMove, new InputDeviceHelper.CommandDelegatePosition(OnMouseMove));
 
             InputHandling.RegisterCommand(Microsoft.Xna.Framework.Input.Keys.G, StartNextLevel,new KeyInformation(KeyTrigger.KEY_DOWN,"START LEVEL"));
-     
+            InputHandling.RegisterCommand(Microsoft.Xna.Framework.Input.Keys.U, UpgradeTurretShortCut, new KeyInformation(KeyTrigger.KEY_DOWN, "UPGRADE"));
+
         }
 
+        private void UpgradeTurretShortCut(TimeSpan elapsedTime)
+        {
+            if(_selectedTurret != null)
+            {
+                UpgradeTurret(_selectedTurret);
+            }
+        }
         private void StartNextLevel(TimeSpan elapsedTime)
         {
             if (_spawner.LevelOver)
@@ -231,7 +246,7 @@ namespace TowerDefense.GamePlay
                     PaintTurretRange(_selectedTurret, Color.White, _selectedTurret.XPos, _selectedTurret.YPos);
                     if(_selectedTurret == turret)
                     {
-                        UpdgradeTurret(turret);
+                        UpgradeTurret(turret);
                     }
                 }
                 _selectedTurret = turret;
@@ -246,7 +261,7 @@ namespace TowerDefense.GamePlay
 
         }
 
-        private void UpdgradeTurret(Turret turret)
+        private void UpgradeTurret(Turret turret)
         {
             if(turret.UpgradeLevel == 1)
             {
@@ -271,7 +286,8 @@ namespace TowerDefense.GamePlay
             var basicRectangle = TurretRectangleBuy(0, 10);
             var bombRectangle = TurretRectangleBuy(1, 10);
             var missleRectangle = TurretRectangleBuy(2, 10);
-            if(x >= basicRectangle.X && x <= basicRectangle.X + basicRectangle.Width && y >= basicRectangle.Y && y <= basicRectangle.Y + basicRectangle.Height)
+            var pelletTurret = TurretRectangleBuy(3, 10);
+            if (x >= basicRectangle.X && x <= basicRectangle.X + basicRectangle.Width && y >= basicRectangle.Y && y <= basicRectangle.Y + basicRectangle.Height)
             {
                 return new BasicTurret(_basicTurretTexture, _basicTurretTexture2,_basicTurretTexture3, _projectileTexture, _platformTexture, 0, 0, _projectileHandler, _spawner._enemies);
             }
@@ -282,6 +298,10 @@ namespace TowerDefense.GamePlay
             else if (x >= missleRectangle.X && x <= missleRectangle.X + missleRectangle.Width && y >= missleRectangle.Y && y <= missleRectangle.Y + missleRectangle.Height)
             {
                 return new MissleTurret(_missleTurretTexture, _missleTurretTexture2, _missleTurretTexture3, _projectileTexture, _platformTexture, 0, 0, _projectileHandler, _spawner._enemies);
+            }
+            else if (x >= pelletTurret.X && x <= pelletTurret.X + pelletTurret.Width && y >= pelletTurret.Y && y <= pelletTurret.Y + pelletTurret.Height)
+            {
+                return new PelletTurret(_pelletTurretTexture, _pelletTurretTexture2, _pelletTurretTexture3, _projectileTexture, _platformTexture, 0, 0, _projectileHandler, _spawner._enemies);
             }
 
             return null;
@@ -486,6 +506,7 @@ namespace TowerDefense.GamePlay
             graphics.Draw(_basicTurretTexture, TurretRectangleBuy(0,10),Color.White);
             graphics.Draw(_bombTurretTexture, TurretRectangleBuy(1, 10), Color.White);
             graphics.Draw(_missleTurretTexture, TurretRectangleBuy(2, 10), Color.White);
+            graphics.Draw(_pelletTurretTexture, TurretRectangleBuy(3, 10), Color.White);
 
 
             graphics.Draw(_infoBackground, StatsRectangleScreen(), Color.White);
