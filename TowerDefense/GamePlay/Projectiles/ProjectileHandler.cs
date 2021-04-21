@@ -2,19 +2,20 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TowerDefense.GamePlay.Projectiles;
 
 namespace TowerDefense.GamePlay
 {
     public class ProjectileHandler : IProjectileHandler
     {
-        private List<Projectile> _projectiles;
+        private List<IProjectile> _projectiles;
         private List<Enemy> _enemies;
         public ProjectileHandler(List<Enemy> enemies)
         {
             this._enemies = enemies;
-            _projectiles = new List<Projectile>();
+            _projectiles = new List<IProjectile>();
         }
-        public void AddProjectile(Projectile projectile)
+        public void AddProjectile(IProjectile projectile)
         {
             _projectiles.Add(projectile);
         }

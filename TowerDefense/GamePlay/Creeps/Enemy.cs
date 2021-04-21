@@ -17,12 +17,20 @@ namespace TowerDefense.GamePlay
         protected double CurrentSpeedTime { get; set; }
         public int Health { get; set; }
 
+        public int CurrentHealth { get; set; }
+
+        public int AwardAmount { get; set; }
         public int CurrentX { get; set; }
         public int CurrentY { get; set; }
 
         public float Width { get; set; }
 
         public float Height { get; set; }
+
+        public bool GotToEnd;
+
+        protected Texture2D _greenHealthBar;
+        protected Texture2D _redHealthBar;
         public Vector2 Position
         {
             get
@@ -56,6 +64,17 @@ namespace TowerDefense.GamePlay
         }
         public virtual void Draw(SpriteBatch graphics,TimeSpan elapsedTime)
         {
+            Vector2 middleBarPosition = new Vector2(Position.X, Position.Y - _textures[0].Height / 2 - 15);
+            Vector2 greenOrigin = new Vector2(_greenHealthBar.Width / 2, _greenHealthBar.Height / 2);
+            Vector2 greenScale = Settings.TowerDefenseSettings.LIFE_BAR_SCALE * Settings.SCALE;
+
+
+            graphics.Draw(_greenHealthBar, middleBarPosition, null, Color.White, 0, greenOrigin, greenScale, SpriteEffects.None, 0);
+            float Percentage = 1 - ((float)CurrentHealth )/ ((float)Health);
+
+            Vector2 endBarPosition = new Vector2(middleBarPosition.X + (greenScale.X * _greenHealthBar.Width/2), middleBarPosition.Y);
+            graphics.Draw(_redHealthBar, endBarPosition, null, Color.White, 0, new Vector2(_redHealthBar.Width, _redHealthBar.Height/2), new Vector2(Settings.TowerDefenseSettings.LIFE_BAR_SCALE.X * Percentage, Settings.TowerDefenseSettings.LIFE_BAR_SCALE.Y) * Settings.SCALE, SpriteEffects.None, 0);
+
             _animatedSprite.draw(graphics);
         }
 
@@ -106,6 +125,7 @@ namespace TowerDefense.GamePlay
             }
             else
             {
+                GotToEnd = true;
                 Die();
             }
         }
@@ -119,8 +139,8 @@ namespace TowerDefense.GamePlay
         }
         public void TakeDamage(int damage)
         {
-            Health -= damage;
-            if(Health <= 0)
+            CurrentHealth -= damage;
+            if(CurrentHealth <= 0)
             {
                 Die();
             }

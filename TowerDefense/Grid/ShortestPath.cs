@@ -145,7 +145,6 @@ namespace TowerDefense.Grid
                                 {
                                     toReturn.AddLast(path[i]);
                                 }
-
                                 done = true;
                             }
 

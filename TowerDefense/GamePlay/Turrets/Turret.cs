@@ -13,23 +13,35 @@ namespace TowerDefense.GamePlay
 
         public int Damage { get; set; }
 
+        public string Name { get; set; }
         public int Price { get; set; }
+
+
+        public int UpgradeLevel;
+
+        public int Upgrade1Price { get; set; }
+
+        public int Upgrade2Price { get; set; }
 
         public int XPos { get; set; }
         public int YPos { get; set; }
 
-        protected float shootRate;
+        public float ShootRate;
         private TimeSpan _currentShootTime;
 
-        private bool _shootsGround;
-        private bool _shootsAir;
+        protected bool _shootsGround;
+        protected bool _shootsAir;
 
         protected float _shootSpeed;
 
         protected IProjectileHandler _handler;
 
         protected Texture2D _bulletTexture;
-        protected List<Texture2D> _textures;
+        public List<Texture2D> Textures;
+
+        protected Texture2D _upgrade1;
+        protected Texture2D _upgrade2;
+        protected Texture2D _upgrade3;
 
         protected Texture2D _platformTexture;
 
@@ -41,9 +53,9 @@ namespace TowerDefense.GamePlay
             _animatedSprite.update(elapsedTime);
 
             _currentShootTime += elapsedTime;
-            if (_currentShootTime.TotalMilliseconds >= shootRate)
+            if (_currentShootTime.TotalMilliseconds >= ShootRate)
             {
-                _currentShootTime -= TimeSpan.FromMilliseconds(shootRate);
+                _currentShootTime -= TimeSpan.FromMilliseconds(ShootRate);
                 var direction = ShouldShoot();
                 if (direction.shouldShoot)
                 {
@@ -51,6 +63,21 @@ namespace TowerDefense.GamePlay
                     Shoot(direction.direction);
                 }
             }
+        }
+
+        public virtual void Updgrade1()
+        {
+            this.UpgradeLevel++;
+            Textures.Add(_upgrade2);
+            Textures.RemoveAt(0);
+        }
+
+        public virtual void Upgrade2()
+        {
+            this.UpgradeLevel++;
+            Textures.Add(_upgrade3);
+            Textures.RemoveAt(0);
+
         }
         public virtual void Draw(SpriteBatch graphics, TimeSpan elapsedTime)
         {
@@ -66,7 +93,7 @@ namespace TowerDefense.GamePlay
             bool shouldShoot = false;
             foreach (var enemy in _enemies)
             {
-                if (!enemy.Alive)
+                if (!enemy.Alive || !CanShootEnemy(enemy))
                 {
                     continue;
                 }
@@ -85,9 +112,20 @@ namespace TowerDefense.GamePlay
             return (shouldShoot,toReturn);
         }
 
+        public bool CanShootEnemy(Enemy enemy)
+        {
+            if (enemy.CanFly)
+            {
+                return _shootsAir;
+
+            }
+
+            return _shootsGround;
+        }
+
         public virtual void Shoot(Vector2 direction)
         {
-            _handler.AddProjectile(new Projectile(_bulletTexture, MapGrid.GetPosition(XPos, YPos), direction, _shootSpeed, Damage));
+            _handler.AddProjectile(new Projectile(_bulletTexture, MapGrid.GetPosition(XPos, YPos), direction, _shootSpeed, Damage,this._shootsAir,this._shootsGround));
         }
        
 
@@ -97,6 +135,9 @@ namespace TowerDefense.GamePlay
         public virtual void Sell()
         {
         }
+
+
+        public abstract Turret Clone();
 
 
     }

@@ -3,10 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TowerDefense.GamePlay.Projectiles;
 
 namespace TowerDefense.GamePlay
 {
-    public class Projectile
+    public class Projectile:IProjectile
     {
         public Vector2 direction { get; set; }
         public int Damage { get; set; }
@@ -22,7 +23,10 @@ namespace TowerDefense.GamePlay
         public bool Alive { get; set; }
 
         private Texture2D _texture;
-        public Projectile(Texture2D texture,Vector2 position,Vector2 direction, float speed, int Damage)
+
+        private bool _hitsAir;
+        private bool _hitsGround;
+        public Projectile(Texture2D texture,Vector2 position,Vector2 direction, float speed, int Damage, bool hitsAir, bool hitsGround)
         {
             this.direction = direction;
             this.Position = position;
@@ -30,9 +34,11 @@ namespace TowerDefense.GamePlay
             this.Speed = speed;
             Alive = true;
             this._texture = texture;
+            this._hitsAir = hitsAir;
+            this._hitsGround = hitsGround;
         }
 
-        public void Update(TimeSpan elapsedTime,List<Enemy> _enemies)
+        public virtual void Update(TimeSpan elapsedTime,List<Enemy> _enemies)
         {
             if (Alive)
             {
@@ -43,22 +49,34 @@ namespace TowerDefense.GamePlay
                     Position += direction *Speed;
                 }
 
-                foreach (var enemy in _enemies)
+                CollideWithEnemies(_enemies);
+            }
+        }
+        public virtual void CollideWithEnemies(List<Enemy> _enemies)
+        {
+            foreach (var enemy in _enemies)
+            {
+                if (enemy.Alive && CanHitEnemy(enemy))
                 {
-                    if (enemy.Alive)
+                    if (Collides(enemy))
                     {
-                        if (Collides(enemy))
-                        {
-                            enemy.TakeDamage(Damage);
-                            Alive = false;
-                            break;
-                        }
+                        enemy.TakeDamage(Damage);
+                        Alive = false;
+                        break;
                     }
                 }
             }
         }
+        public bool CanHitEnemy(Enemy enemy)
+        {
+            if (enemy.CanFly)
+            {
+                return _hitsAir;
+            }
 
-        public bool Collides(Enemy enemy)
+            return _hitsGround;
+        }
+        public virtual bool Collides(Enemy enemy)
         {
             return Position.X >= enemy.Position.X - enemy.Width / 2 && Position.X <= enemy.Position.X + enemy.Width / 2 && Position.Y >= enemy.Position.Y - enemy.Height / 2 && Position.Y <= enemy.Position.Y + enemy.Height / 2;
       

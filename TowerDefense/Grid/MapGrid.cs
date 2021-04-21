@@ -68,7 +68,7 @@ namespace TowerDefense.Grid
                             blockedByWall = false;
                         }
                     }
-                    _grid[x, y] = new GridPiece(xPos, yPos, blockedByWall);
+                    _grid[x, y] = new GridPiece(xPos, yPos, blockedByWall,Color.White);
                     yPos += Settings.TowerDefenseSettings.GRID_Y_LENGTH * Settings.SCALE.Y;
                 }
                 xPos += Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.Y;
@@ -119,12 +119,21 @@ namespace TowerDefense.Grid
         {
             return x >= 0 && x < Settings.TowerDefenseSettings.LENGTH_OF_GRID && y >= 0 && y < Settings.TowerDefenseSettings.LENGTH_OF_GRID;
         }
-        public void HighlightPiece(int x, int y, bool highlight)
+        public void HighlightPiece(int x, int y, Color color)
         {
             if (IsOnGrid(x, y))
             {
-                _grid[x, y].Highlight = highlight;
+                _grid[x, y].Color = color;
             }   
+        }
+
+        public Color GetHighlightColor(int x, int y)
+        {
+            if (IsOnGrid(x, y))
+            {
+                return _grid[x, y].Color;
+            }
+            return Color.White;
         }
         public void Render(SpriteBatch graphics)
         {
@@ -132,12 +141,8 @@ namespace TowerDefense.Grid
             {
                 if (!gridPiece.Occupied)
                 {
-                    Color color = Color.White;
-                    if (gridPiece.Highlight)
-                    {
-                        color = Color.Transparent;
-                    }
-                    graphics.Draw(_tile, new Vector2(gridPiece.XPos, gridPiece.YPos), null, color, 0, new Vector2(0, 0), Settings.TowerDefenseSettings.TILE_SCALE * Settings.SCALE, SpriteEffects.None, 0);
+                  
+                    graphics.Draw(_tile, new Vector2(gridPiece.XPos, gridPiece.YPos), null, gridPiece.Color, 0, new Vector2(0, 0), Settings.TowerDefenseSettings.TILE_SCALE * Settings.SCALE, SpriteEffects.None, 0);
 
                 }
             }

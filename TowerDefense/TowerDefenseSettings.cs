@@ -33,9 +33,19 @@ namespace TowerDefense
 
         #region CannonSettings
 
-        public readonly Vector2 CREEP_SCALE = new Vector2(1f, 1f);
 
         public Vector2 PLATFORM_SCALE = new Vector2(1.5f, 1.5f);
+        #endregion
+
+        #region Enemies
+        public readonly Vector2 CREEP_SCALE = new Vector2(1f, 1f);
+
+        public readonly Vector2 LIFE_BAR_SCALE = new Vector2(.25f, .1f);
+
+
+        public readonly int[] TURRET_RANGES = { 1, 2, 3, 4, 5 };
+        public readonly int[] TURRET_DAMAGES = { 10, 20, 40, 80 };
+        public readonly int[] TURRET_FIRE_RATES = { 1000, 800, 600, 250, 100 };
         #endregion
     }
 }

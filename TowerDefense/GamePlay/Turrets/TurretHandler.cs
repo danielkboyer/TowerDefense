@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace TowerDefense.GamePlay
@@ -14,6 +15,11 @@ namespace TowerDefense.GamePlay
         {
             _turrets = new List<Turret>();
             _enemies = enemies;
+        }
+
+        public Turret GetTurret(int x, int y)
+        {
+            return _turrets.FirstOrDefault(t=>t.XPos == x && t.YPos == y);
         }
 
         public void AddTurret(Turret turret)

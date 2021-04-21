@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,14 +11,15 @@ namespace TowerDefense.Grid
         public float YPos { get; set; }
         public bool Occupied { get; set; }
 
-        public bool Highlight { get; set; }
+        public Color Color { get; set; }
         
 
-        public GridPiece(float xPos, float yPos, bool occupied)
+        public GridPiece(float xPos, float yPos, bool occupied, Color color)
         {
             this.XPos = xPos;
             this.YPos = yPos;
             this.Occupied = occupied;
+            this.Color = color;
         }
 
         public GridPiece(GridPiece gridPiece)
