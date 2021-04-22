@@ -12,11 +12,11 @@ namespace TowerDefense.GamePlay.Creeps
     {
 
 
-        public FlyingCreep(List<Texture2D> textures, Texture2D greenHealthBar, Texture2D redHealthBar, List<GridPos> gridPositions)
+        public FlyingCreep(List<Texture2D> textures, Texture2D greenHealthBar, Texture2D redHealthBar, List<GridPos> gridPositions, int healthAddon = 0, int speedAddOn = 0)
         {
             this._textures = textures;
-            this.Health = 200;
-            this.Speed = 1000;
+            this.Health = 200 + healthAddon;
+            this.Speed = 1000 + speedAddOn;
             this.gridPositions = CalculateFlyPath(gridPositions);
 
             this.CurrentHealth = Health;
@@ -102,6 +102,9 @@ namespace TowerDefense.GamePlay.Creeps
         public override Enemy Copy(List<GridPos> shortestPath)
         {
             var greenCreep = new FlyingCreep(_textures, this._greenHealthBar, this._redHealthBar, shortestPath);
+            greenCreep.Health = this.Health;
+            greenCreep.Speed = this.Speed;
+            greenCreep.CurrentHealth = this.Health;
             greenCreep.Init();
             return greenCreep;
         }

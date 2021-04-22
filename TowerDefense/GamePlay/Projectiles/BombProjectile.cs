@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TowerDefense.Particles;
 
 namespace TowerDefense.GamePlay.Projectiles
 {
@@ -14,7 +15,7 @@ namespace TowerDefense.GamePlay.Projectiles
             this._radius = radius;
         }
 
-        public override void CollideWithEnemies(List<Enemy> _enemies)
+        public override bool CollideWithEnemies(List<Enemy> _enemies)
         {
             foreach (var enemy in _enemies)
             {
@@ -25,12 +26,18 @@ namespace TowerDefense.GamePlay.Projectiles
                         //TODO: add particle system for explosion
                         Explode(enemy.Position, _enemies);
                         Alive = false;
-                        break;
+                        return true;
                     }
                 }
             }
+
+            return false;
         }
 
+        public override void ParticleEffect()
+        {
+            ParticleSystem.BombTrail(this.Position);
+        }
         public void Explode(Vector2 position,List<Enemy> _enemies)
         {
             float startX = position.X - _radius;
@@ -45,6 +52,8 @@ namespace TowerDefense.GamePlay.Projectiles
                     enemy.TakeDamage(this.Damage);
                 }
             }
+
+            ParticleSystem.BombExplosion(position,this._radius);
         }
 
     }

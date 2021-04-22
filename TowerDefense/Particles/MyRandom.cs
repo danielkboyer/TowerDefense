@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LunarLanding.Particles
+namespace TowerDefense.Particles
 {
     /// <summary>
     /// Expands upon some of the features the .NET Random class does:

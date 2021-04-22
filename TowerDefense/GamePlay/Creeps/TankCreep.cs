@@ -12,11 +12,11 @@ namespace TowerDefense.GamePlay.Creeps
     {
 
 
-        public TankCreep(List<Texture2D> textures, Texture2D greenHealthBar, Texture2D redHealthBar,  List<GridPos> gridPositions)
+        public TankCreep(List<Texture2D> textures, Texture2D greenHealthBar, Texture2D redHealthBar, List<GridPos> gridPositions, int healthAddon = 0, int speedAddOn = 0)
         {
             //SETTINGS
-            this.Health = 800;
-            this.Speed = 2000;
+            this.Health = 800 + healthAddon;
+            this.Speed = 2000 + speedAddOn;
             this.AwardAmount = 500;
 
             this._textures = textures;
@@ -63,6 +63,9 @@ namespace TowerDefense.GamePlay.Creeps
         public override Enemy Copy(List<GridPos> shortestPath)
         {
             var greenCreep = new TankCreep(_textures, this._greenHealthBar, this._redHealthBar,  shortestPath);
+            greenCreep.Health = this.Health;
+            greenCreep.Speed = this.Speed;
+            greenCreep.CurrentHealth = this.Health;
             greenCreep.Init();
             return greenCreep;
         }

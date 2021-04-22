@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TowerDefense.GamePlay.Projectiles;
 using TowerDefense.Grid;
 
 namespace TowerDefense.GamePlay.Turrets
@@ -19,7 +20,7 @@ namespace TowerDefense.GamePlay.Turrets
             //Settings
             this.Name = "MISSLE";
             this.Price = 400;
-            this._shootSpeed = 10;
+            this._shootSpeed = 3;
             this.Upgrade1Price = 200;
             this.Upgrade2Price = 200;
             this._shootsAir = true;
@@ -45,6 +46,11 @@ namespace TowerDefense.GamePlay.Turrets
             this._platformTexture = platformTexture;
         }
 
+        public override void Shoot(Vector2 direction)
+        {
+            _handler.AddProjectile(new MissleProjectile(_bulletTexture, MapGrid.GetPosition(XPos, YPos), direction, _shootSpeed, Damage, this._shootsAir, this._shootsGround));
+        }
+
         public override Turret Clone()
         {
             return new MissleTurret(_upgrade1, _upgrade2, _upgrade3, this._bulletTexture, this._platformTexture, this.XPos, this.YPos, this._handler, this._enemies);
@@ -53,7 +59,7 @@ namespace TowerDefense.GamePlay.Turrets
         public override void Upgrade2()
         {
             this.Range = Settings.TowerDefenseSettings.TURRET_RANGES[4];
-            this.ShootRate = Settings.TowerDefenseSettings.TURRET_FIRE_RATES[3];
+            this.Damage = Settings.TowerDefenseSettings.TURRET_DAMAGES[3];
             base.Upgrade2();
         }
 

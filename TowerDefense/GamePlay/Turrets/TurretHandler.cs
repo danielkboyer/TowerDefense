@@ -17,6 +17,14 @@ namespace TowerDefense.GamePlay
             _enemies = enemies;
         }
 
+        public void ReloadGame()
+        {
+            _turrets.Clear();
+        }
+        public void RemoveTurret(int x, int y)
+        {
+            _turrets.RemoveAll(t => t.XPos == x && t.YPos == y);
+        }
         public Turret GetTurret(int x, int y)
         {
             return _turrets.FirstOrDefault(t=>t.XPos == x && t.YPos == y);

@@ -32,7 +32,7 @@ namespace TowerDefense.Input
 
         public static void UpdateKey(Keys currentKey, Keys newKey)
         {
-            RegisterCommand(newKey, handlers[currentKey].Handler, keys[currentKey]);
+            RegisterCommand(newKey, handlers[currentKey].Handler, handlers[currentKey].KeyTriggerInfo);
             UnRegisterCommand(currentKey);
         }
         public static void UnRegisterCommand(Keys key)

@@ -5,47 +5,99 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LunarLanding.Particles
+namespace TowerDefense.Particles
 {
-    public class ParticleSystem
-    {
-        private ThrustParticles _thrustParticleSystem;
+    public static class ParticleSystem {
+        private static ExplosionParticles _explosionParticles;
+        private static CreepDeathParticles _creepDeathParticleSystem;
+        private static BombTrailParticles _bombTrailParticles;
+        private static MissleTrailParticles _missleTrailParticles;
+        private static TurretParticles _turretParticles;
 
-        private ShipDestroyedParticles _shipDestroyParticleSystem;
-
-        public ParticleSystem(ContentManager content)
+        private static GenericParticles _genericParticles;
+        public static void LoadContent(ContentManager content)
         {
-            //, TimeSpan rate, int sourceX, int sourceY, int size, int speed, TimeSpan lifetime, TimeSpan switchover
-            //_thrustParticleSystem = new ThrustParticles(content,(int)(100*Settings.SCALE.Y),new TimeSpan(0,0,0,1,0), (int)(5 * Settings.SCALE.X));
+            _explosionParticles = new ExplosionParticles(content);
 
-            //, TimeSpan rate, int sourceX, int sourceY, int size, int speed, TimeSpan lifetime, TimeSpan switchover
-            //_shipDestroyParticleSystem = new ShipDestroyedParticles(content,1500,250,3000,(int)(25*Settings.SCALE.X), (int)(200 * Settings.SCALE.X), (int)(400 * Settings.SCALE.X), (int)(5 *Settings.SCALE.X));
-
+            _creepDeathParticleSystem = new CreepDeathParticles(content);
+            _bombTrailParticles = new BombTrailParticles(content);
+            _genericParticles = new GenericParticles();
+            _missleTrailParticles = new MissleTrailParticles(content);
+            _turretParticles = new TurretParticles(content);
+        }
+        public static void TurretSold(Vector2 center)
+        {
+            _turretParticles.TurretSold(center, _genericParticles);
+        }
+        public static void MissleTrail(Vector2 center)
+        {
+            _missleTrailParticles.MissleTrail(center, _genericParticles);
+        }
+        public static void BombTrail(Vector2 center)
+        {
+            _bombTrailParticles.BombTrail(center, _genericParticles);
+        }
+        public static void CreepDeath(Vector2 center)
+        {
+            _creepDeathParticleSystem.CreepDeath(center, _genericParticles);
         }
 
-        public void ShipThrust(Vector2 center,float rotation, float radius,float gasLeft)
+        public static void BombExplosion(Vector2 center,int range)
         {
-            rotation = rotation + MathF.PI / 2;
-            var thruster = center + new Vector2((float)Math.Cos(rotation), (float)Math.Sin(rotation)) * radius;
-            _thrustParticleSystem.ShipThrust(thruster, rotation,gasLeft);
+            _explosionParticles.BombExplosion(center,range, _genericParticles);
         }
+        public static void MissleExplosion(Vector2 center, float rotation)
+        {
+            _explosionParticles.MissleExplosion(center, rotation, _genericParticles);
+        }
+        public static void Render(SpriteBatch spriteBatch, TimeSpan elapsedTime)
+        {
+            _genericParticles.Draw(spriteBatch);
+        }
+        public static void Update(TimeSpan elapsedTime)
+        {
+            //
+            // For any existing particles, update them, if we find ones that have expired, add them
+            // to the remove list.
+            List<int> removeMe = new List<int>();
+            foreach (Particle p in _genericParticles.m_particles.Values)
+            {
+                p.lifetime -= elapsedTime;
+                if (p.lifetime < TimeSpan.Zero)
+                {
+                    //
+                    // Add to the remove list
+                    removeMe.Add(p.name);
+                }
+                else
+                {
+                    //
+                    // Only if we have enough elapsed time, and then move/rotate things
+                    // based upon elapsed time, not just the fact that we have received an update.
+                    if (elapsedTime.Milliseconds > 0)
+                    {
+                        //
+                        // Update its position
+                        p.position += (p.direction * (p.speed * (elapsedTime.Milliseconds / 1000.0f)));
 
-        public void ShipDestroy(Vector2 center)
-        {
-            _shipDestroyParticleSystem.ShipDestory(center);
-        }
+                        //
+                        // Have it rotate proportional to its speed
+                        p.rotation += (p.speed * (elapsedTime.Milliseconds / 100000.0f));
+                    }
 
-        public void Render(SpriteBatch spriteBatch,TimeSpan elapsedTime)
-        {
-            //_thrustParticleSystem.Draw(spriteBatch);
-            //_shipDestroyParticleSystem.Draw(spriteBatch);
-            //_counterParticleSystem.Draw(spriteBatch);
-        }
-        public void Update(TimeSpan elapsedTime)
-        {
-            //_thrustParticleSystem.Update(elapsedTime);
-            //_shipDestroyParticleSystem.Update(elapsedTime);
-            //_counterParticleSystem.Update(elapsedTime);
+
+                    //
+                    // Apply some gravity
+                    //p.direction += new Vector2(0, Settings.CoyoteSettings.GRAVITY);
+                }
+            }
+
+            //
+            // Remove any expired particles
+            foreach (int Key in removeMe)
+            {
+                _genericParticles.m_particles.Remove(Key);
+            }
         }
     }
 }

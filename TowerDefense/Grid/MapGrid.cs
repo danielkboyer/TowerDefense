@@ -17,8 +17,14 @@ namespace TowerDefense.Grid
         private Texture2D _tile;
         public MapGrid()
         {
-            _grid = new GridPiece[Settings.TowerDefenseSettings.LENGTH_OF_GRID, Settings.TowerDefenseSettings.LENGTH_OF_GRID];
 
+        }
+
+
+        public void ReloadMap()
+        {
+            _grid = new GridPiece[Settings.TowerDefenseSettings.LENGTH_OF_GRID, Settings.TowerDefenseSettings.LENGTH_OF_GRID];
+            Generate();
         }
 
         /// <summary>
@@ -86,7 +92,7 @@ namespace TowerDefense.Grid
         }
 
 
-        public bool IsOnGrid(int x, int y)
+        public static bool IsOnGrid(int x, int y)
         {
             if (x < 0)
                 return false;

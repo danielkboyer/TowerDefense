@@ -20,6 +20,10 @@ namespace TowerDefense.GamePlay
             _projectiles.Add(projectile);
         }
 
+        public void ReloadGame()
+        {
+            _projectiles.Clear();
+        }
         public void Update(TimeSpan elapsed)
         {
             foreach(var projectile in _projectiles)

@@ -4,17 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LunarLanding.Particles
+namespace TowerDefense.Particles
 {
-    public abstract class GenericParticles
+    public class GenericParticles
     {
-        protected Dictionary<int, Particle> m_particles = new Dictionary<int, Particle>();
-
-        protected Texture2D m_texture;
-        public abstract void Update(TimeSpan elapsedTime);
+        public Dictionary<int, Particle> m_particles = new Dictionary<int, Particle>();
         public void Draw(SpriteBatch spriteBatch)
         {
-            
+
             foreach (Particle p in m_particles.Values)
             {
                 Rectangle r = new Rectangle(0, 0, p.particleSize, p.particleSize);
@@ -29,6 +26,14 @@ namespace LunarLanding.Particles
                     new Vector2(p.texture.Width / 2, p.texture.Height / 2),
                     SpriteEffects.None,
                     0);
+            }
+        }
+
+        public void AddParticle(int key, Particle particle)
+        {
+            if (!m_particles.ContainsKey(key))
+            {
+                m_particles.Add(key, particle);
             }
         }
     }

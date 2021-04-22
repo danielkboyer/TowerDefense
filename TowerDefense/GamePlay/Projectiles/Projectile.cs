@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TowerDefense.GamePlay.Projectiles;
+using TowerDefense.Grid;
 
 namespace TowerDefense.GamePlay
 {
@@ -26,6 +27,7 @@ namespace TowerDefense.GamePlay
 
         private bool _hitsAir;
         private bool _hitsGround;
+        protected float _rotation;
         public Projectile(Texture2D texture,Vector2 position,Vector2 direction, float speed, int Damage, bool hitsAir, bool hitsGround)
         {
             this.direction = direction;
@@ -36,23 +38,48 @@ namespace TowerDefense.GamePlay
             this._texture = texture;
             this._hitsAir = hitsAir;
             this._hitsGround = hitsGround;
+            this._rotation = (float)(Math.Atan2(direction.Y, direction.X) + Math.PI / 2);
         }
 
+        private bool OutOfBounds()
+        {
+            var coordinates = MapGrid.GetXYFromCoordinates(this.Position.X, this.Position.Y);
+            if (MapGrid.IsOnGrid(coordinates.x, coordinates.y))
+            {
+                return false;
+            }
+
+            return true;
+        }
         public virtual void Update(TimeSpan elapsedTime,List<Enemy> _enemies)
         {
+            
             if (Alive)
             {
+                if(OutOfBounds())
+                {
+                    Alive = false;
+                    return;
+                }
                 CurrentRate += elapsedTime;
                 if (CurrentRate.TotalMilliseconds >= _bulletUpdateRate)
                 {
                     CurrentRate -= TimeSpan.FromMilliseconds(_bulletUpdateRate);
                     Position += direction *Speed;
+                    ParticleEffect();
                 }
 
                 CollideWithEnemies(_enemies);
+
+                
             }
         }
-        public virtual void CollideWithEnemies(List<Enemy> _enemies)
+
+        public virtual void ParticleEffect()
+        {
+            return;
+        }
+        public virtual bool CollideWithEnemies(List<Enemy> _enemies)
         {
             foreach (var enemy in _enemies)
             {
@@ -62,10 +89,12 @@ namespace TowerDefense.GamePlay
                     {
                         enemy.TakeDamage(Damage);
                         Alive = false;
-                        break;
+                        return true;
                     }
                 }
             }
+
+            return false;
         }
         public bool CanHitEnemy(Enemy enemy)
         {
@@ -84,7 +113,7 @@ namespace TowerDefense.GamePlay
 
         public void Draw(SpriteBatch graphics)
         {
-            graphics.Draw(_texture, Position, null, Color.White, 0, new Vector2(_texture.Width / 2, _texture.Height / 2),  Settings.SCALE, SpriteEffects.None, 0);
+            graphics.Draw(_texture, Position, null, Color.White, _rotation, new Vector2(_texture.Width / 2, _texture.Height / 2),  Settings.SCALE, SpriteEffects.None, 0);
 
 
         }

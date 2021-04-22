@@ -10,11 +10,11 @@ namespace TowerDefense.GamePlay
     {
 
 
-        public BasicCreep(List<Texture2D> textures, Texture2D greenHealthBar, Texture2D redHealthBar, List<GridPos> gridPositions)
+        public BasicCreep(List<Texture2D> textures, Texture2D greenHealthBar, Texture2D redHealthBar, List<GridPos> gridPositions, int healthAddon = 0, int speedAddOn = 0)
         {
             this._textures = textures;
-            this.Health = 100;
-            this.Speed = 1000;
+            this.Health = 100 + healthAddon;
+            this.Speed = 1000 + speedAddOn;
             this.gridPositions = gridPositions;
 
             this.CurrentHealth = Health;
@@ -61,6 +61,9 @@ namespace TowerDefense.GamePlay
         public override Enemy Copy(List<GridPos> shortestPath)
         {
             var greenCreep = new BasicCreep(_textures, this._greenHealthBar, this._redHealthBar, shortestPath);
+            greenCreep.Health = this.Health;
+            greenCreep.Speed = this.Speed;
+            greenCreep.CurrentHealth = this.Health;
             greenCreep.Init();
             return greenCreep;
         }

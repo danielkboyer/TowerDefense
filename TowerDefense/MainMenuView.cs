@@ -9,7 +9,7 @@ namespace TowerDefense
     {
         private SpriteFont m_fontMenu;
         private SpriteFont m_fontMenuSelect;
-
+        private Texture2D background;
         private enum MenuState
         {
             NewGame,
@@ -26,6 +26,7 @@ namespace TowerDefense
         {
             m_fontMenu = contentManager.Load<SpriteFont>("Fonts/menu");
             m_fontMenuSelect = contentManager.Load<SpriteFont>("Fonts/menu-select");
+            background = contentManager.Load<Texture2D>("Backgrounds/tower-defense-background-stars");
         }
         public override GameStateEnum processInput(GameTime gameTime)
         {
@@ -80,6 +81,7 @@ namespace TowerDefense
         {
             m_spriteBatch.Begin();
 
+            m_spriteBatch.Draw(background, new Rectangle(0, 0, Settings.GameSettings.WINDOW_WIDTH, Settings.GameSettings.WINDOW_HEIGHT), Color.White);
             // I split the first one's parameters on separate lines to help you see them better
             float bottom = drawMenuItem(
                 m_currentSelection == MenuState.NewGame ? m_fontMenuSelect : m_fontMenu, 

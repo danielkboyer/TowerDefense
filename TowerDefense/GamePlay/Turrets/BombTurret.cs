@@ -19,7 +19,7 @@ namespace TowerDefense.GamePlay.Turrets
             //Settings
             this.Name = "BOMB";
             this.Price = 350;
-            this._shootSpeed = 10;
+            this._shootSpeed = 7;
             this.Upgrade1Price = 200;
             this.Upgrade2Price = 600;
             this._radius = 50;
@@ -60,12 +60,14 @@ namespace TowerDefense.GamePlay.Turrets
 
         public override void Upgrade2()
         {
-            this.Damage = Settings.TowerDefenseSettings.TURRET_DAMAGES[3];
+            this.Damage = Settings.TowerDefenseSettings.TURRET_DAMAGES[2];
+            this._radius = 80;
             base.Upgrade2();
         }
 
         public override void Updgrade1()
         {
+            this._radius = 60;
             this.Range = Settings.TowerDefenseSettings.TURRET_RANGES[1];
             base.Updgrade1();
         }

@@ -11,5 +11,7 @@ namespace TowerDefense.GamePlay
         public void Update(TimeSpan elapsedTime);
 
         public void Draw(SpriteBatch graphics, TimeSpan elapsedTime);
+
+        public void ReloadGame();
     }
 }
