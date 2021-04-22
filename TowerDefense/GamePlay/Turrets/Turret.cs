@@ -65,6 +65,7 @@ namespace TowerDefense.GamePlay
             }
         }
 
+        
         public virtual void Updgrade1()
         {
             this.UpgradeLevel++;

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using TowerDefense.GamePlay.Projectiles;
+using TowerDefense.GamePlay.Sound;
 using TowerDefense.Grid;
 
 namespace TowerDefense.GamePlay.Turrets
@@ -51,6 +52,7 @@ namespace TowerDefense.GamePlay.Turrets
         public override void Shoot(Vector2 direction)
         {
             _handler.AddProjectile(new BombProjectile(_bulletTexture, MapGrid.GetPosition(XPos, YPos), direction, _shootSpeed, Damage,this._shootsAir,this._shootsGround,_radius));
+            SoundManager.BombFire();
         }
 
         public override Turret Clone()

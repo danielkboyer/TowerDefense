@@ -159,6 +159,60 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/menu-select.spritefont
 
+#begin Sounds/basicFire.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/basicFire.wav
+
+#begin Sounds/bombExplode.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/bombExplode.mp3
+
+#begin Sounds/bombFire.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/bombFire.mp3
+
+#begin Sounds/creepDeath.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/creepDeath.mp3
+
+#begin Sounds/missle.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/missle.wav
+
+#begin Sounds/music.wav
+/importer:WavImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sounds/music.wav
+
+#begin Sounds/pelletFire.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/pelletFire.wav
+
+#begin Sounds/sellTurret.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/sellTurret.wav
+
+#begin Sounds/turretPlacement.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/turretPlacement.wav
+
 #begin Sprites/BasicCreep/1.png
 /importer:TextureImporter
 /processor:TextureProcessor

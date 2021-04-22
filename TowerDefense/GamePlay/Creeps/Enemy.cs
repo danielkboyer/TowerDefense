@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TowerDefense.GamePlay.Sound;
 using TowerDefense.Grid;
 using static TowerDefense.Grid.ShortestPath;
 
@@ -142,6 +143,7 @@ namespace TowerDefense.GamePlay
             CurrentHealth -= damage;
             if(CurrentHealth <= 0)
             {
+                SoundManager.CreepDeath();
                 Die();
             }
         }

@@ -8,6 +8,8 @@ using TowerDefense.Grid;
 using TowerDefense.Input;
 using TowerDefense.Storage;
 using Microsoft.Xna.Framework.Input;
+using TowerDefense.GamePlay.Sound;
+using Microsoft.Xna.Framework.Media;
 
 namespace TowerDefense.GamePlay
 {
@@ -39,7 +41,7 @@ namespace TowerDefense.GamePlay
 
         #endregion
         #region Player
-
+        private bool _playMusic = true;
         private PlayerStats _playerStats;
 
         private int Money;
@@ -175,7 +177,9 @@ namespace TowerDefense.GamePlay
 
             //particle
             ParticleSystem.LoadContent(content);
-            
+
+            //Sound
+            SoundManager.Init(content);
             //grid
             _mapGrid = new MapGrid();
             _mapGrid.LoadContent(content);
@@ -199,7 +203,7 @@ namespace TowerDefense.GamePlay
             //*************************************************
             InitializeMapRenderCoordinates();
             ReloadGame();
-            
+            SoundManager.PlayMusic();
 
         }
 
@@ -271,6 +275,7 @@ namespace TowerDefense.GamePlay
 
 
                 Money += sellPrice;
+                SoundManager.SellTurret();
                 var mapGridCoordinates = MapGrid.GetPosition(_selectedTurret.XPos, _selectedTurret.YPos);
                 _textFloater.AddFloatingText((int)mapGridCoordinates.X, (int)mapGridCoordinates.Y - _selectedTurret.Textures[0].Height/2, "+" + sellPrice);
                 ParticleSystem.TurretSold(new Vector2(mapGridCoordinates.X, mapGridCoordinates.Y) + new Vector2(-Settings.TowerDefenseSettings.GRID_X_LENGTH/4, -Settings.TowerDefenseSettings.GRID_Y_LENGTH / 4));
@@ -442,7 +447,7 @@ namespace TowerDefense.GamePlay
                         Money -= _buyTurret.Price;
                         _buyTurret.XPos = mapGridCoordinates.x;
                         _buyTurret.YPos = mapGridCoordinates.y;
-
+                        SoundManager.PlaceTurret();
                         _turretHandler.AddTurret(_buyTurret.Clone());
                     }
 
@@ -521,6 +526,7 @@ namespace TowerDefense.GamePlay
 
         public void GameOverUpdate(TimeSpan elapsedTime)
         {
+            SoundManager.Update();
             _mouseInput.Update(elapsedTime);
 
             _turretHandler.Update(elapsedTime);
@@ -593,7 +599,7 @@ namespace TowerDefense.GamePlay
             _mouseInput.Update(elapsedTime);
 
 
-
+            SoundManager.Update();
             _turretHandler.Update(elapsedTime);
             _spawner.Update(elapsedTime);
             _projectileHandler.Update(elapsedTime);
@@ -612,6 +618,12 @@ namespace TowerDefense.GamePlay
             {
                 return;
             }
+
+            if (_playMusic)
+            {
+                SoundManager.PlayMusic();
+            }
+            SoundManager.Update();
             InputHandling.Update(elapsedTime);
             _mouseInput.Update(elapsedTime);
 

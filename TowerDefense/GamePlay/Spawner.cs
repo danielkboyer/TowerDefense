@@ -269,8 +269,8 @@ namespace TowerDefense.GamePlay
 
         public (int startX, int startY, int endX, int endY) GetRandomSpawnPoint()
         {
-            int randomSpawnStart = _random.Next(0, 3);
-            int randomSpawnEnd = _random.Next(0, 3);
+            int randomSpawnStart = _random.Next(0, 4);
+            int randomSpawnEnd = _random.Next(0, 4);
             if (randomSpawnEnd == randomSpawnStart)
                 return GetRandomSpawnPoint();
             (int startX, int startY, int endX, int endY) toReturn;
@@ -435,11 +435,6 @@ namespace TowerDefense.GamePlay
                 if (enemy.Alive)
                 {
                     enemy.Draw(graphics, elapsedTime);
-                    foreach (var enemyPath in enemy.gridPositions)
-                    {
-                        graphics.Draw(_basicCreepTextures[0], new Vector2(MapGrid.GetPosition(enemyPath.XPos, enemyPath.YPos).X, MapGrid.GetPosition(enemyPath.XPos, enemyPath.YPos).Y), null, Color.White, 0, new Vector2(_basicCreepTextures[0].Width / 2, _basicCreepTextures[0].Height / 2), .1f * Settings.SCALE, SpriteEffects.None, 0);
-
-                    }
                 }
             }
         }

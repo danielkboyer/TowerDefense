@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using TowerDefense.GamePlay.Sound;
 using TowerDefense.Grid;
 using TowerDefense.Particles;
 
@@ -15,6 +16,7 @@ namespace TowerDefense.GamePlay.Projectiles
         public override void ParticleEffect()
         {
             ParticleSystem.MissleTrail(this.Position);
+            SoundManager.Missle();
         }
 
         public override bool CollideWithEnemies(List<Enemy> _enemies)

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TowerDefense.GamePlay.Sound;
 
 namespace TowerDefense
 {
@@ -76,6 +77,7 @@ namespace TowerDefense
         }
         public override void update(GameTime gameTime)
         {
+            SoundManager.PauseMusic();
         }
         public override void render(GameTime gameTime)
         {

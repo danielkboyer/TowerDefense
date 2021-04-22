@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TowerDefense.GamePlay.Sound;
 using TowerDefense.Particles;
 
 namespace TowerDefense.GamePlay.Projectiles
@@ -26,6 +27,7 @@ namespace TowerDefense.GamePlay.Projectiles
                         //TODO: add particle system for explosion
                         Explode(enemy.Position, _enemies);
                         Alive = false;
+                        SoundManager.BombExplosion();
                         return true;
                     }
                 }

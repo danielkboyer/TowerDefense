@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TowerDefense.GamePlay.Sound;
 using TowerDefense.Grid;
 
 namespace TowerDefense.GamePlay
@@ -44,7 +45,11 @@ namespace TowerDefense.GamePlay
             this._enemies = enemies;
             this._platformTexture = platformTexture;
         }
-
+        public override void Shoot(Vector2 direction)
+        {
+            SoundManager.ShootBasic();
+            base.Shoot(direction);
+        }
         public override Turret Clone()
         {
             return new BasicTurret(_upgrade1, _upgrade2, _upgrade3, this._bulletTexture, this._platformTexture, this.XPos, this.YPos, this._handler, this._enemies);
