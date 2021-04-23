@@ -117,6 +117,8 @@ namespace TowerDefense.GamePlay
         private Texture2D _lifeSensorYellow;
         private Texture2D _lifeSensorRed;
 
+        private Texture2D _soundImage;
+
         private Texture2D _infoBackground;
 
         #endregion
@@ -159,6 +161,7 @@ namespace TowerDefense.GamePlay
             _pelletProjectileTexture = content.Load<Texture2D>("Sprites/PelletTurret/GreenPellet");
             _missleProjectileTexture = content.Load<Texture2D>("Sprites/MissleTurret/MissleProjectile");
 
+            _soundImage = content.Load<Texture2D>("Backgrounds/soundImage");
             _platformTexture = content.Load<Texture2D>("Backgrounds/turret-base");
             _mainBackground = content.Load<Texture2D>("Backgrounds/tower-defense-background-stars");
             _lifeSensorGreen = content.Load<Texture2D>("Backgrounds/13-1");
@@ -226,8 +229,8 @@ namespace TowerDefense.GamePlay
 
             _spawner._enemies.Clear();
             m_updateFunction = MapUpdate;
-      
 
+            SoundManager.Reload();
             //*************************************************
             //Load Variables 
             //*************************************************
@@ -298,6 +301,20 @@ namespace TowerDefense.GamePlay
                 m_updateFunction = GameUpdate;
             }
         }
+
+        private void SoundClicked(int x, int y)
+        {
+            if (x >= soundStartX && x <= soundEndX && y >= soundStartY && y <= soundEndY)
+            {
+                if(SoundManager.MusicPlaying){
+                    SoundManager.PauseMusic();
+                }
+                else
+                {
+                    SoundManager.PlayMusic();
+                }
+            }
+        }
         private bool HotKeyClicked(int x, int y)
         {
          
@@ -329,7 +346,9 @@ namespace TowerDefense.GamePlay
                 return;
             }
 
-            if(GameOver == true)
+            SoundClicked(x,y);
+
+            if (GameOver == true)
             {
                 GameOver = false;
                 return;
@@ -526,7 +545,8 @@ namespace TowerDefense.GamePlay
 
         public void GameOverUpdate(TimeSpan elapsedTime)
         {
-            SoundManager.Update();
+            //SoundManager.Update();
+            
             _mouseInput.Update(elapsedTime);
 
             _turretHandler.Update(elapsedTime);
@@ -617,11 +637,6 @@ namespace TowerDefense.GamePlay
             if (KeyUpdate())
             {
                 return;
-            }
-
-            if (_playMusic)
-            {
-                SoundManager.PlayMusic();
             }
             SoundManager.Update();
             InputHandling.Update(elapsedTime);
@@ -836,6 +851,11 @@ namespace TowerDefense.GamePlay
         private float startLevelStartY;
         private float startLevelEndY;
 
+        private float soundStartX;
+        private float soundEndX;
+        private float soundStartY;
+        private float soundEndY;
+
         private bool hotKeyClicked = false;
 
         private bool sellClicked = false;
@@ -913,6 +933,14 @@ namespace TowerDefense.GamePlay
             startLevelEndX = startMessageMeasure.X + startLevelStartX;
             ySize += startMessageMeasure;
             ySize.Y += yOffset;
+
+            soundStartX = startX + xOffset;
+            soundStartY = yCoordinates[1] + ySize.Y + yOffset;
+            graphics.Draw(_soundImage, new Vector2(soundStartX, soundStartY), null, Color.White, 0, new Vector2(0, 0), .15f, SpriteEffects.None, 0);
+
+            soundEndX = soundStartX + _soundImage.Width * .15f;
+            soundEndY = soundStartY + _soundImage.Height * .15f;
+         
         }
 
         private Vector2 GetStatGridPos(int y)
@@ -934,14 +962,18 @@ namespace TowerDefense.GamePlay
             Lives--;
             if(Lives < 0)
             {
-                GameOver = true;
-                _playerStats.AddScore(Score);
-                if(Level > _playerStats.Level)
+                if (!GameOver)
                 {
-                    _playerStats.Level = Level;
+                    
+                    GameOver = true;
+                    _playerStats.AddScore(Score);
+                    if (Level > _playerStats.Level)
+                    {
+                        _playerStats.Level = Level;
+                    }
+                    SavePlayerStats();
+                    m_updateFunction = GameOverUpdate;
                 }
-                SavePlayerStats();
-                m_updateFunction = GameOverUpdate;
             }
         }
 

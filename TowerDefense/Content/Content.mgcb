@@ -97,6 +97,18 @@
 /processorParam:TextureFormat=Color
 /build:Backgrounds/13-3.png
 
+#begin Backgrounds/soundImage.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Backgrounds/soundImage.png
+
 #begin Backgrounds/stats-background.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -183,11 +195,11 @@
 /processorParam:Quality=Best
 /build:Sounds/creepDeath.mp3
 
-#begin Sounds/missle.wav
-/importer:WavImporter
+#begin Sounds/missle.mp3
+/importer:Mp3Importer
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Sounds/missle.wav
+/build:Sounds/missle.mp3
 
 #begin Sounds/music.wav
 /importer:WavImporter

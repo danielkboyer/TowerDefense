@@ -45,7 +45,7 @@ namespace TowerDefense.Grid
         /// <returns></returns>
         public static (int x, int y) GetXYFromCoordinates(float x, float y)
         {
-            return ((int)(x / Settings.TowerDefenseSettings.GRID_X_LENGTH * Settings.SCALE.Y), (int)(y / Settings.TowerDefenseSettings.GRID_Y_LENGTH * Settings.SCALE.Y));
+            return ((int)(x / Settings.SCALE.Y / Settings.TowerDefenseSettings.GRID_X_LENGTH), (int)(y /Settings.SCALE.Y / Settings.TowerDefenseSettings.GRID_Y_LENGTH ));
         }
 
         public void Generate()

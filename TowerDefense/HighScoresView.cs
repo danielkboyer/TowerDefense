@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TowerDefense.GamePlay;
 using TowerDefense.Storage;
-
 namespace TowerDefense
 {
     public class HighScoresView : GameStateView
@@ -33,17 +32,18 @@ namespace TowerDefense
 
         public void LoadPlayerStats()
         {
-            _playerStats = _persistentStorage.Load<PlayerStats>("DEFAULT");
-            if (_playerStats != null)
-            {
-                for (int x = 0; x < _playerStats.HighScores.Count; x++)
+                _playerStats = _persistentStorage.Load<PlayerStats>("DEFAULT");
+                if (_playerStats != null)
                 {
-                    _highScores[x] = _playerStats.HighScores[x];
+                    for (int x = 0; x < _playerStats.HighScores.Count; x++)
+                    {
+                        _highScores[x] = _playerStats.HighScores[x];
+                    }
+
+
                 }
-
-
-            }
-            m_updateScoreTime = 500;
+                m_updateScoreTime = 500;
+           
         }
 
         public override GameStateEnum processInput(GameTime gameTime)

@@ -5,25 +5,31 @@ using System.Collections.Generic;
 using TowerDefense.GamePlay.Sound;
 using TowerDefense.Grid;
 using TowerDefense.Particles;
+using static TowerDefense.GamePlay.Sound.SoundManager;
 
 namespace TowerDefense.GamePlay.Projectiles
 {
     public class MissleProjectile : Projectile
     {
+        SoundPackage _currentPackage = new SoundPackage(false, null);
         public MissleProjectile(Texture2D texture, Vector2 position, Vector2 direction, float speed, int Damage, bool hitsAir, bool hitsGround) : base(texture, position, direction, speed, Damage, hitsAir, hitsGround)
         {
         }
         public override void ParticleEffect()
         {
             ParticleSystem.MissleTrail(this.Position);
-            SoundManager.Missle();
+
+            if (_currentPackage.Play == false && (_currentPackage.Sound == null || _currentPackage.Sound.State == Microsoft.Xna.Framework.Audio.SoundState.Stopped))
+            {
+                _currentPackage = SoundManager.Missle();
+            }
         }
 
         public override bool CollideWithEnemies(List<Enemy> _enemies)
         {
-            if(base.CollideWithEnemies(_enemies))
+            if (base.CollideWithEnemies(_enemies))
             {
-                ParticleSystem.MissleExplosion(this.Position, (float)(this._rotation - Math.PI/2));
+                ParticleSystem.MissleExplosion(this.Position, (float)(this._rotation - Math.PI / 2));
             }
             return false;
         }

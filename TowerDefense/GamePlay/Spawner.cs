@@ -154,7 +154,6 @@ namespace TowerDefense.GamePlay
         {
 
             EnemyPacket packet = new EnemyPacket(new BasicCreep(_basicCreepTextures, _greenHealthBar, _redHealthBar, null), 5, 0, 2000, shortestPath);
-
             return new Level(new List<EnemyPacket>() { packet }, LeftSpawnPoint, RightSpawnPoint);
         }
 

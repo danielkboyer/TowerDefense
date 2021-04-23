@@ -8,6 +8,14 @@ namespace TowerDefense.GamePlay.Sound
 {
     public static class SoundManager
     {
+
+        public static bool MusicPlaying
+        {
+            get
+            {
+                return _musicPlaying;
+            }
+        }
         private static SoundEffect _bombExplosion;
         private static SoundEffect _bombFire;
         private static SoundEffect _creepDeath;
@@ -40,6 +48,11 @@ namespace TowerDefense.GamePlay.Sound
             _soundEffects = new List<SoundPackage>();
         }
 
+        public static void Reload()
+        {
+
+            _soundEffects.Clear();
+        }
         public static void PlayMusic()
         {
             if (!_musicPlaying)
@@ -108,9 +121,11 @@ namespace TowerDefense.GamePlay.Sound
         {
             _soundEffects.Add(new SoundPackage(true, _creepDeath.CreateInstance()));
         }
-        public static void Missle()
+        public static SoundPackage Missle()
         {
-           // _soundEffects.Add(new SoundPackage(true, _missle.CreateInstance()));
+            var sound = new SoundPackage(true, _missle.CreateInstance());
+            _soundEffects.Add(sound);
+            return sound;
         }
         public static void SellTurret()
         {
@@ -126,7 +141,7 @@ namespace TowerDefense.GamePlay.Sound
         }
 
 
-        private class SoundPackage
+        public class SoundPackage
         {
             public bool Play;
             public SoundEffectInstance Sound;
